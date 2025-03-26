@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voting Ruang Toilet</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .doors-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .door {
+            width: 200px;
+            height: 350px;
+            background-color: #8B4513;
+            border-radius: 10px;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s;
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .door:hover {
+            transform: scale(1.05);
+        }
+        
+        .door-number {
+            background-color: #f0f0f0;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            margin-top: 20px;
+            font-size: 24px;
+        }
+        
+        .door-handle {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            width: 20px;
+            height: 40px;
+            background-color: #FFD700;
+            border-radius: 5px;
+        }
+        
+        .door-label {
+            margin-top: 15px;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .vote-count {
+            margin-top: 10px;
+            background-color: white;
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+        
+        .results {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 800px;
+        }
+        
+        .progress-container {
+            margin: 15px 0;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .progress-bar {
+            height: 25px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            transition: width 0.5s;
+        }
+        
+        .room1 { background-color: #4CAF50; }
+        .room2 { background-color: #2196F3; }
+        .room3 { background-color: #FF9800; }
+        
+        .reset-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        .reset-button:hover {
+            background-color: #d32f2f;
+        }
+        
+        .thank-you {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background-color: rgba(0,0,0,0.8);
+            color: white;
+            padding: 30px 50px;
+            border-radius: 10px;
+            font-size: 24px;
+            opacity: 0;
+            transition: all 0.5s;
+            z-index: 100;
+        }
+        
+        .show-thank-you {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+        
+        .toilet-sign {
+            margin-top: 10px;
+            width: 60px;
+            height: 60px;
+            background-color: white;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 40px;
+        }
+
+        .user-input {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .submit-button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .submit-button:hover {
+            background-color: #45a049;
+        }
+
+        .export-button {
+            margin-left: 10px;
+            padding: 10px 20px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .export-button:hover {
+            background-color: #0b7dda;
+        }
+
+        .admin-section {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .votes-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .votes-table th, .votes-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .votes-table th {
+            background-color: #f2f2f2;
+        }
+
+        .votes-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .votes-table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Voting Ruang Toilet Yang Paling Disukai</h1>
+    
+    <div class="user-input" id="userForm">
+        <div class="form-group">
+            <label for="employeeId">ID Karyawan:</label>
+            <input type="text" id="employeeId" name="employeeId" required>
+        </div>
+        <div class="form-group">
+            <label for="employeeName">Nama Karyawan:</label>
+            <input type="text" id="employeeName" name="employeeName" required>
+        </div>
+        <button class="submit-button" onclick="submitForm()">Submit</button>
+    </div>
+    
+    <div class="doors-container" id="doorsContainer" style="display: none;">
+        <div class="door" id="door1" onclick="vote(1)">
+            <div class="door-number">1</div>
+            <div class="door-handle"></div>
+            <div class="door-label">Ruang 1</div>
+            <div class="toilet-sign">🚻</div>
+            <div class="vote-count" id="count1">0 Votes</div>
+        </div>
+        
+        <div class="door" id="door2" onclick="vote(2)">
+            <div class="door-number">2</div>
+            <div class="door-handle"></div>
+            <div class="door-label">Ruang 2</div>
+            <div class="toilet-sign">🚻</div>
+            <div class="vote-count" id="count2">0 Votes</div>
+        </div>
+        
+        <div class="door" id="door3" onclick="vote(3)">
+            <div class="door-number">3</div>
+            <div class="door-handle"></div>
+            <div class="door-label">Ruang 3</div>
+            <div class="toilet-sign">🚻</div>
+            <div class="vote-count" id="count3">0 Votes</div>
+        </div>
+    </div>
+    
+    <div id="reasonForm" style="display: none;" class="user-input">
+        <div class="form-group">
+            <label for="reason">Alasan Memilih:</label>
+            <textarea id="reason" name="reason" required></textarea>
+        </div>
+        <button class="submit-button" onclick="submitReason()">Submit Alasan</button>
+    </div>
+    
+    <div class="results" id="resultsSection" style="display: none;">
+        <h2>Hasil Voting</h2>
+        
+        <div class="progress-container">
+            <div class="progress-label">
+                <span>Ruang 1</span>
+                <span id="percent1">0%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress room1" id="progress1" style="width: 0%">0</div>
+            </div>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-label">
+                <span>Ruang 2</span>
+                <span id="percent2">0%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress room2" id="progress2" style="width: 0%">0</div>
+            </div>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-label">
+                <span>Ruang 3</span>
+                <span id="percent3">0%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress room3" id="progress3" style="width: 0%">0</div>
+            </div>
+        </div>
+
+        <div class="button-container">
+            <button class="reset-button" onclick="resetVotes()">Reset Semua Votes</button>
+            <button class="export-button" onclick="exportToJSON()">Export Data (JSON)</button>
+        </div>
+        
+        <div class="admin-section">
+            <h3>Admin Panel - Data Voting</h3>
+            <table class="votes-table">
+                <thead>
+                    <tr>
+                        <th>ID Karyawan</th>
+                        <th>Nama</th>
+                        <th>Ruang Pilihan</th>
+                        <th>Alasan</th>
+                    </tr>
+                </thead>
+                <tbody id="votesTableBody">
+                    <!-- Data votes akan ditampilkan di sini -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="thank-you" id="thankYou">
+        Terima kasih atas vote Anda!
+    </div>
+    
+    <script>
+        // Struktur data JSON untuk voting
+        let votingData = {
+            rooms: [
+                { id: 1, name: "Ruang 1", votes: 0 },
+                { id: 2, name: "Ruang 2", votes: 0 },
+                { id: 3, name: "Ruang 3", votes: 0 }
+            ],
+            employees: []
+        };
+        
+        let currentUser = null;
+        let selectedRoom = null;
+        
+        // Inisialisasi data
+        function initJSONData() {
+            // Cek apakah ada data tersimpan di localStorage
+            const savedData = localStorage.getItem('toiletVotingJSON');
+            if (savedData) {
+                try {
+                    votingData = JSON.parse(savedData);
+                } catch (err) {
+                    console.error('Error parsing saved data:', err);
+                    // Jika terjadi error parsing, gunakan data default
+                }
+            }
+            
+            // Update tampilan
+            updateDisplay();
+        }
+        
+        // Inisialisasi saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', initJSONData);
+        
+        function submitForm() {
+            const employeeId = document.getElementById('employeeId').value.trim();
+            const employeeName = document.getElementById('employeeName').value.trim();
+            
+            if (!employeeId || !employeeName) {
+                alert('Harap isi ID karyawan dan nama.');
+                return;
+            }
+            
+            // Cek apakah karyawan sudah melakukan voting
+            const employeeExists = votingData.employees.some(emp => emp.id === employeeId);
+            if (employeeExists) {
+                alert('ID karyawan ini sudah melakukan voting sebelumnya.');
+                return;
+            }
+            
+            // Simpan data user sementara
+            currentUser = {
+                id: employeeId,
+                name: employeeName
+            };
+            
+            // Sembunyikan form dan tampilkan pintu
+            document.getElementById('userForm').style.display = 'none';
+            document.getElementById('doorsContainer').style.display = 'flex';
+            document.getElementById('resultsSection').style.display = 'block';
+        }
+        
+        function vote(roomNumber) {
+            // Cek apakah user sudah masuk
+            if (!currentUser) {
+                alert('Silakan masukkan data karyawan terlebih dahulu.');
+                return;
+            }
+            
+            // Simpan ruangan yang dipilih
+            selectedRoom = roomNumber;
+            
+            // Sembunyikan pintu dan tampilkan form alasan
+            document.getElementById('doorsContainer').style.display = 'none';
+            document.getElementById('reasonForm').style.display = 'block';
+        }
+        
+        function submitReason() {
+            const reason = document.getElementById('reason').value.trim();
+            
+            if (!reason) {
+                alert('Harap isi alasan pemilihan ruang toilet.');
+                return;
+            }
+            
+            try {
+                // Tambahkan vote ke ruangan yang dipilih
+                for (let i = 0; i < votingData.rooms.length; i++) {
+                    if (votingData.rooms[i].id === selectedRoom) {
+                        votingData.rooms[i].votes++;
+                        break;
+                    }
+                }
+                
+                // Tambahkan data karyawan dengan vote
+                votingData.employees.push({
+                    id: currentUser.id,
+                    name: currentUser.name,
+                    roomVote: selectedRoom,
+                    reason: reason,
+                    timestamp: new Date().toISOString()
+                });
+                
+                // Simpan data ke localStorage
+                localStorage.setItem('toiletVotingJSON', JSON.stringify(votingData));
+                
+                // Update tampilan
+                updateDisplay();
+                
+                // Sembunyikan form alasan
+                document.getElementById('reasonForm').style.display = 'none';
+                
+                // Tampilkan pesan terima kasih
+                const thankYou = document.getElementById('thankYou');
+                thankYou.classList.add('show-thank-you');
+                
+                setTimeout(() => {
+                    thankYou.classList.remove('show-thank-you');
+                }, 2000);
+                
+                // Reset data user sementara
+                currentUser = null;
+                selectedRoom = null;
+                
+            } catch (err) {
+                console.error('Error submitting vote:', err);
+                alert('Terjadi kesalahan saat melakukan voting. Silakan coba lagi.');
+            }
+        }
+        
+        function updateDisplay() {
+            try {
+                // Hitung total votes
+                let totalVotes = 0;
+                votingData.rooms.forEach(room => {
+                    totalVotes += room.votes;
+                });
+                
+                // Update tampilan untuk setiap ruang
+                for (let i = 0; i < votingData.rooms.length; i++) {
+                    const room = votingData.rooms[i];
+                    const count = room.votes;
+                    const percent = totalVotes > 0 ? Math.round((count / totalVotes) * 100) : 0;
+                    
+                    document.getElementById(`count${room.id}`).textContent = `${count} Votes`;
+                    document.getElementById(`progress${room.id}`).style.width = `${percent}%`;
+                    document.getElementById(`progress${room.id}`).textContent = count;
+                    document.getElementById(`percent${room.id}`).textContent = `${percent}%`;
+                }
+                
+                // Update tabel voting
+                updateVotesTable();
+                
+            } catch (err) {
+                console.error('Error updating display:', err);
+            }
+        }
+        
+        function updateVotesTable() {
+            try {
+                const tableBody = document.getElementById('votesTableBody');
+                tableBody.innerHTML = '';
+                
+                // Menampilkan data dari semua karyawan yang sudah voting
+                votingData.employees.forEach(employee => {
+                    const tr = document.createElement('tr');
+                    
+                    // ID Karyawan
+                    const idCell = document.createElement('td');
+                    idCell.textContent = employee.id;
+                    tr.appendChild(idCell);
+                    
+                    // Nama Karyawan
+                    const nameCell = document.createElement('td');
+                    nameCell.textContent = employee.name;
+                    tr.appendChild(nameCell);
+                    
+                    // Ruang Pilihan
+                    const roomCell = document.createElement('td');
+                    roomCell.textContent = 'Ruang ' + employee.roomVote;
+                    tr.appendChild(roomCell);
+                    
+                    // Alasan
+                    const reasonCell = document.createElement('td');
+                    reasonCell.textContent = employee.reason || '(Tidak ada alasan)';
+                    tr.appendChild(reasonCell);
+                    
+                    tableBody.appendChild(tr);
+                });
+                
+            } catch (err) {
+                console.error('Error updating votes table:', err);
+            }
+        }
+        
+        function resetVotes() {
+            if (confirm("Apakah Anda yakin ingin mereset semua votes? Tindakan ini tidak dapat dibatalkan.")) {
+                try {
+                    // Reset data ke nilai default
+                    votingData = {
+                        rooms: [
+                            { id: 1, name: "Ruang 1", votes: 0 },
+                            { id: 2, name: "Ruang 2", votes: 0 },
+                            { id: 3, name: "Ruang 3", votes: 0 }
+                        ],
+                        employees: []
+                    };
+                    
+                    // Simpan ke localStorage
+                    localStorage.setItem('toiletVotingJSON', JSON.stringify(votingData));
+                    
+                    // Reset form dan tampilan
+                    document.getElementById('userForm').style.display = 'block';
+                    document.getElementById('doorsContainer').style.display = 'none';
+                    document.getElementById('reasonForm').style.display = 'none';
+                    document.getElementById('resultsSection').style.display = 'none';
+                    
+                    document.getElementById('employeeId').value = '';
+                    document.getElementById('employeeName').value = '';
+                    document.getElementById('reason').value = '';
+                    
+                    currentUser = null;
+                    selectedRoom = null;
+                    
+                    // Update tampilan
+                    updateDisplay();
+                    
+                    alert('Semua votes telah direset.');
+                    
+                } catch (err) {
+                    console.error('Error resetting votes:', err);
+                    alert('Terjadi kesalahan saat mereset voting. Silakan coba lagi.');
+                }
+            }
+        }
+        
+        function exportToJSON() {
+            try {
+                // Membuat salinan data untuk ekspor
+                const exportData = JSON.stringify(votingData, null, 2);
+                
+                // Membuat file JSON dan mengunduhnya
+                const blob = new Blob([exportData], { type: 'application/json;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.setAttribute('href', url);
+                link.setAttribute('download', 'toilet_voting_data.json');
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+            } catch (err) {
+                console.error('Error exporting to JSON:', err);
+                alert('Terjadi kesalahan saat mengekspor data. Silakan coba lagi.');
+            }
+        }
+        </script>
+  </body>
+</html> 
