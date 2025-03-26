@@ -1,0 +1,9 @@
+{
+  "rooms": [
+    { "id": 1, "name": "Ruang 1", "votes": 0 },
+    { "id": 2, "name": "Ruang 2", "votes": 0 },
+    { "id": 3, "name": "Ruang 3", "votes": 0 }
+  ],
+  "employees": [],
+  "lastUpdated": "2025-03-26T00:00:00.000Z"
+}

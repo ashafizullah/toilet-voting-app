@@ -360,7 +360,7 @@
         </div>
 
         <div class="button-container">
-            <!-- <button class="reset-button" onclick="resetVotes()">Reset Semua Votes</button> -->
+            <button class="reset-button" onclick="resetVotes()">Reset Semua Votes</button>
             <button class="export-button" onclick="exportToJSON()">Export Data (JSON)</button>
         </div>
         
@@ -394,32 +394,34 @@
                 { id: 2, name: "Ruang 2", votes: 0 },
                 { id: 3, name: "Ruang 3", votes: 0 }
             ],
-            employees: []
+            employees: [],
+            lastUpdated: new Date().toISOString()
         };
-        
+
         let currentUser = null;
         let selectedRoom = null;
-        
+
         // Inisialisasi data
         function initJSONData() {
-            // Cek apakah ada data tersimpan di localStorage
-            const savedData = localStorage.getItem('toiletVotingJSON');
-            if (savedData) {
-                try {
-                    votingData = JSON.parse(savedData);
-                } catch (err) {
-                    console.error('Error parsing saved data:', err);
-                    // Jika terjadi error parsing, gunakan data default
-                }
-            }
-            
-            // Update tampilan
+            // Update tampilan dengan data default
             updateDisplay();
+            
+            // Tambahkan elemen untuk upload file
+            const adminSection = document.querySelector('.admin-section');
+            const uploadSection = document.createElement('div');
+            uploadSection.innerHTML = `
+                <h3>Load Data dari File JSON</h3>
+                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <input type="file" id="jsonFileInput" accept=".json">
+                    <button class="submit-button" onclick="loadJSONFile()">Load Data</button>
+                </div>
+            `;
+            adminSection.prepend(uploadSection);
         }
-        
+
         // Inisialisasi saat halaman dimuat
         document.addEventListener('DOMContentLoaded', initJSONData);
-        
+
         function submitForm() {
             const employeeId = document.getElementById('employeeId').value.trim();
             const employeeName = document.getElementById('employeeName').value.trim();
@@ -447,7 +449,7 @@
             document.getElementById('doorsContainer').style.display = 'flex';
             document.getElementById('resultsSection').style.display = 'block';
         }
-        
+
         function vote(roomNumber) {
             // Cek apakah user sudah masuk
             if (!currentUser) {
@@ -462,7 +464,7 @@
             document.getElementById('doorsContainer').style.display = 'none';
             document.getElementById('reasonForm').style.display = 'block';
         }
-        
+
         function submitReason() {
             const reason = document.getElementById('reason').value.trim();
             
@@ -489,8 +491,11 @@
                     timestamp: new Date().toISOString()
                 });
                 
-                // Simpan data ke localStorage
-                localStorage.setItem('toiletVotingJSON', JSON.stringify(votingData));
+                // Update timestamp
+                votingData.lastUpdated = new Date().toISOString();
+                
+                // Ekspor file JSON secara otomatis setelah voting
+                exportToJSON('vote.json');
                 
                 // Update tampilan
                 updateDisplay();
@@ -515,7 +520,7 @@
                 alert('Terjadi kesalahan saat melakukan voting. Silakan coba lagi.');
             }
         }
-        
+
         function updateDisplay() {
             try {
                 // Hitung total votes
@@ -543,7 +548,7 @@
                 console.error('Error updating display:', err);
             }
         }
-        
+
         function updateVotesTable() {
             try {
                 const tableBody = document.getElementById('votesTableBody');
@@ -580,7 +585,7 @@
                 console.error('Error updating votes table:', err);
             }
         }
-        
+
         function resetVotes() {
             if (confirm("Apakah Anda yakin ingin mereset semua votes? Tindakan ini tidak dapat dibatalkan.")) {
                 try {
@@ -591,11 +596,15 @@
                             { id: 2, name: "Ruang 2", votes: 0 },
                             { id: 3, name: "Ruang 3", votes: 0 }
                         ],
-                        employees: []
+                        employees: [],
+                        lastUpdated: new Date().toISOString()
                     };
                     
-                    // Simpan ke localStorage
-                    localStorage.setItem('toiletVotingJSON', JSON.stringify(votingData));
+                    // Update timestamp
+                    votingData.lastUpdated = new Date().toISOString();
+                    
+                    // Ekspor file JSON untuk reset
+                    exportToJSON('vote.json');
                     
                     // Reset form dan tampilan
                     document.getElementById('userForm').style.display = 'block';
@@ -621,9 +630,12 @@
                 }
             }
         }
-        
-        function exportToJSON() {
+
+        function exportToJSON(filename = 'vote.json') {
             try {
+                // Update timestamp sebelum ekspor
+                votingData.lastUpdated = new Date().toISOString();
+                
                 // Membuat salinan data untuk ekspor
                 const exportData = JSON.stringify(votingData, null, 2);
                 
@@ -632,7 +644,7 @@
                 const url = URL.createObjectURL(blob);
                 const link = document.createElement('a');
                 link.setAttribute('href', url);
-                link.setAttribute('download', 'toilet_voting_data.json');
+                link.setAttribute('download', filename);
                 link.style.visibility = 'hidden';
                 document.body.appendChild(link);
                 link.click();
@@ -643,6 +655,47 @@
                 alert('Terjadi kesalahan saat mengekspor data. Silakan coba lagi.');
             }
         }
+
+        function loadJSONFile() {
+            const fileInput = document.getElementById('jsonFileInput');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Silakan pilih file JSON terlebih dahulu.');
+                return;
+            }
+            
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                try {
+                    const loadedData = JSON.parse(e.target.result);
+                    
+                    // Validasi struktur data minimal
+                    if (!loadedData.rooms || !loadedData.employees) {
+                        throw new Error('Format file JSON tidak valid.');
+                    }
+                    
+                    // Update data voting
+                    votingData = loadedData;
+                    
+                    // Update tampilan
+                    updateDisplay();
+                    
+                    alert('Data berhasil dimuat dari file JSON.');
+                    
+                } catch (err) {
+                    console.error('Error loading JSON file:', err);
+                    alert('Terjadi kesalahan saat memuat file JSON. Pastikan format file benar.');
+                }
+            };
+            
+            reader.onerror = function() {
+                alert('Terjadi kesalahan saat membaca file.');
+            };
+            
+            reader.readAsText(file);
+        }
         </script>
-  </body>
-</html> 
+    </body>
+</html>
